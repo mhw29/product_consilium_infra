@@ -13,7 +13,7 @@ provider "azurerm" {
 }
 
 resource "azurerm_resource_group" "aks_rg" {
-    name     = "my-aks-resource-group"
+    name     = "aks-vault-resource-group"
     location = "centralus"
 }
 
