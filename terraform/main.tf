@@ -35,3 +35,15 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
     }
 }
 
+module "kubernetes" {
+    source = "./kubernetes_module"
+    cluster_name = azurerm_kubernetes_cluster.aks_cluster.name
+    host = azurerm_kubernetes_cluster.aks_cluster.kube_admin_config.0.host
+    username = azurerm_kubernetes_cluster.aks_cluster.kube_admin_config.0.username
+    password = azurerm_kubernetes_cluster.aks_cluster.kube_admin_config.0.password
+    client_certificate = azurerm_kubernetes_cluster.aks_cluster.kube_admin_config.0.client_certificate
+    client_key = azurerm_kubernetes_cluster.aks_cluster.kube_admin_config.0.client_key
+    cluster_ca_certificate = azurerm_kubernetes_cluster.aks_cluster.kube_admin_config.0.cluster_ca_certificate
+}
+
+
