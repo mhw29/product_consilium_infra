@@ -17,8 +17,6 @@ provider "helm" {
 }
 
 resource "kubernetes_namespace" "argocd" {
-  depends_on = [data.azurerm_kubernetes_cluster.main]
-
   metadata {
     name = "argocd"
   }
