@@ -22,8 +22,8 @@ resource "kubernetes_namespace" "argocd" {
   }
 }
 
-resource "helm_release" "argocd-staging" {
-  name       = "argocd-staging"
+resource "helm_release" "argocd" {
+  name       = "argocd"
   chart      = "argo-cd"
   repository = "https://argoproj.github.io/argo-helm"
   version    = "5.27.3"
