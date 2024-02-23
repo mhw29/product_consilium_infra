@@ -27,7 +27,7 @@ resource "helm_release" "argocd-staging" {
   chart      = "argo-cd"
   repository = "https://argoproj.github.io/argo-helm"
   version    = "5.27.3"
-  namespace  = "argocd-staging"
+  namespace  = "argocd"
   timeout    = "1200"
   values     = [templatefile("./kubernetes_module/argocd/values.yaml", {})]
 }
