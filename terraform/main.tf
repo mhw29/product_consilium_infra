@@ -49,6 +49,25 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
     }
 }
 
+resource "azuread_application" "app" {
+    display_name = "github-action-acr-app"
+}
+
+resource "azuread_service_principal" "sp" {
+    application_id  = azuread_application.app.application_id
+}
+
+resource "azuread_service_principal_password" "sp_password" {
+  service_principal_id         = azuread_service_principal.sp.id
+  end_date_relative            = "8760h" # 1 year
+}
+
+resource "azurerm_role_assignment" "acr_push" {
+  scope                            = azurerm_container_registry.acr.id
+  role_definition_name             = "AcrPush"
+  principal_id                     = azuread_service_principal.sp.id
+}
+
 module "kubernetes" {
     source = "./kubernetes_module"
     host                   = azurerm_kubernetes_cluster.aks_cluster.kube_config.0.host
@@ -58,4 +77,5 @@ module "kubernetes" {
     client_key             = base64decode(azurerm_kubernetes_cluster.aks_cluster.kube_config.0.client_key)
     cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.aks_cluster.kube_config.0.cluster_ca_certificate)
 }
+
 
