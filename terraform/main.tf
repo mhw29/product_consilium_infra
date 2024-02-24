@@ -13,7 +13,7 @@ provider "azurerm" {
 }
 
 resource "azurerm_resource_group" "aks_rg" {
-    name     = "aks-vault-resource-group"
+    name     = "product-consilium-resource-group"
     location = "centralus"
 }
 
@@ -32,10 +32,10 @@ resource "azurerm_container_registry" "acr" {
 }
 
 resource "azurerm_kubernetes_cluster" "aks_cluster" {
-    name                = "aks-vault"
+    name                = "productconsilium-aks"
     location            = azurerm_resource_group.aks_rg.location
     resource_group_name = azurerm_resource_group.aks_rg.name
-    dns_prefix          = "aksvault"
+    dns_prefix          = "productconsilium"
 
     default_node_pool {
         name                = "default"
