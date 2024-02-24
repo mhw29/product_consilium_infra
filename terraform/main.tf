@@ -17,6 +17,14 @@ resource "azurerm_resource_group" "aks_rg" {
     location = "centralus"
 }
 
+
+resource "azurerm_dns_zone" "hosted_zone" {
+    name                = "productconsilium.com"
+    resource_group_name = azurerm_resource_group.aks_rg.name
+}
+
+
+
 resource "azurerm_kubernetes_cluster" "aks_cluster" {
     name                = "aks-vault"
     location            = azurerm_resource_group.aks_rg.location
