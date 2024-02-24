@@ -42,6 +42,7 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
         node_count          = 1
         vm_size             = "Standard_B1s"
         enable_auto_scaling = false
+        temporary_name_for_rotation   = "temp-default"
     }
 
     identity {
