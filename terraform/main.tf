@@ -23,6 +23,15 @@ resource "azurerm_dns_zone" "hosted_zone" {
     resource_group_name = azurerm_resource_group.aks_rg.name
 }
 
+resource "azurerm_container_registry" "acr" {
+    name                     = "productconsilium"
+    resource_group_name      = azurerm_resource_group.aks_rg.name
+    location                 = azurerm_resource_group.aks_rg.location
+    sku                      = "Standard"
+    admin_enabled            = false
+    georeplication_locations = ["eastus", "westus"]
+}
+
 
 
 resource "azurerm_kubernetes_cluster" "aks_cluster" {
