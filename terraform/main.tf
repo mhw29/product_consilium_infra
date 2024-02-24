@@ -29,7 +29,6 @@ resource "azurerm_container_registry" "acr" {
     location                 = azurerm_resource_group.aks_rg.location
     sku                      = "Standard"
     admin_enabled            = false
-    georeplication_locations = ["eastus", "westus"]
 }
 
 
