@@ -28,39 +28,42 @@ resource "azurerm_container_registry" "acr" {
     resource_group_name      = azurerm_resource_group.aks_rg.name
     location                 = azurerm_resource_group.aks_rg.location
     sku                      = "Standard"
-    resource "azurerm_kubernetes_cluster" "aks_cluster" {
-        name                = "productconsilium-aks"
-        location            = azurerm_resource_group.aks_rg.location
-        resource_group_name = azurerm_resource_group.aks_rg.name
-        dns_prefix          = "productconsilium"
+    admin_enabled            = true
+}
 
-        default_node_pool {
-            name                = "default"
-            node_count          = 1
-            vm_size             = "Standard_B2s"
-            enable_auto_scaling = false
-        }
+resource "azurerm_kubernetes_cluster" "aks_cluster" {
+    name                = "productconsilium-aks"
+    location            = azurerm_resource_group.aks_rg.location
+    resource_group_name = azurerm_resource_group.aks_rg.name
+    dns_prefix          = "productconsilium"
 
-        identity {
-            type = "SystemAssigned"
-        }
-
-        addon_profile {
-            acr_integration {
-                enabled = true
-                registry_id = azurerm_container_registry.acr.id
-            }
-        }
+    default_node_pool {
+        name                = "default"
+        node_count          = 1
+        vm_size             = "Standard_B2s"
+        enable_auto_scaling = false
     }
 
-    module "kubernetes" {
-        source = "./kubernetes_module"
-        host                   = azurerm_kubernetes_cluster.aks_cluster.kube_config.0.host
-        username               = azurerm_kubernetes_cluster.aks_cluster.kube_config.0.username
-        password               = azurerm_kubernetes_cluster.aks_cluster.kube_config.0.password
-        client_certificate     = base64decode(azurerm_kubernetes_cluster.aks_cluster.kube_config.0.client_certificate)
-        client_key             = base64decode(azurerm_kubernetes_cluster.aks_cluster.kube_config.0.client_key)
-        cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.aks_cluster.kube_config.0.cluster_ca_certificate)
+    identity {
+        type = "SystemAssigned"
     }
+
+    addon_profile {
+        acr_integration {
+            enabled = true
+            registry_id = azurerm_container_registry.acr.id
+        }
+    }
+}
+
+module "kubernetes" {
+    source = "./kubernetes_module"
+    host                   = azurerm_kubernetes_cluster.aks_cluster.kube_config.0.host
+    username               = azurerm_kubernetes_cluster.aks_cluster.kube_config.0.username
+    password               = azurerm_kubernetes_cluster.aks_cluster.kube_config.0.password
+    client_certificate     = base64decode(azurerm_kubernetes_cluster.aks_cluster.kube_config.0.client_certificate)
+    client_key             = base64decode(azurerm_kubernetes_cluster.aks_cluster.kube_config.0.client_key)
+    cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.aks_cluster.kube_config.0.cluster_ca_certificate)
+}
 
 
