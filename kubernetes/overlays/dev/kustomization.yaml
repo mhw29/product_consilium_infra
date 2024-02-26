@@ -2,9 +2,9 @@ resources:
 - ../../base
 
 replicas:
-- name: web
+- name: product-consilium-deployment
   count: 1
 images:
-- name: web
+- name: product-consilium-deployment
   newTag: 5e0a6824f01e28c5cba43fd1249188488f7cf0a7
 namePrefix: dev-
