@@ -1,10 +1,19 @@
-project: default
-source:
-  repoURL: 'https://github.com/mhw29/product_consilium_infra.git'
-  path: kubernetes/overlays/dev
-  targetRevision: HEAD
-destination:
-  server: 'https://kubernetes.default.svc'
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: product-consilium
+  # You'll usually want to add your resources to the argocd namespace.
   namespace: productconsilium
-syncPolicy:
-  automated: {}
+  labels:
+    name: productconsilium
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/mhw29/product_consilium_infra.git'
+    path: kubernetes/overlays/dev
+    targetRevision: HEAD
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: productconsilium
+  syncPolicy:
+    automated: {}
