@@ -1,0 +1,15 @@
+resources:
+- deployment.yaml
+- namespace.yaml
+# - service.yaml
+# - ingress.yaml
+# - configmap.yaml
+- repository.yaml
+
+replicas:
+- name: web
+  count: 1
+images:
+- name: web
+  newTag: 5e0a6824f01e28c5cba43fd1249188488f7cf0a7
+namePrefix: dev-
