@@ -1,10 +1,10 @@
 resources:
-- deployment.yaml
-- namespace.yaml
+- ../../base/deployment.yaml
+- ../../base/namespace.yaml
 # - service.yaml
 # - ingress.yaml
 # - configmap.yaml
-- repository.yaml
+- ../../repository.yaml
 
 replicas:
 - name: web
