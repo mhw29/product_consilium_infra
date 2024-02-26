@@ -1,0 +1,10 @@
+project: default
+source:
+  repoURL: 'https://github.com/mhw29/product_consilium_infra.git'
+  path: kubernetes/overlays/dev
+  targetRevision: HEAD
+destination:
+  server: 'https://kubernetes.default.svc'
+  namespace: productconsilium
+syncPolicy:
+  automated: {}
