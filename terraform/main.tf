@@ -50,18 +50,20 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
 
 }
 
-# Use the ACR's ID to get its Resource ID
-data "azurerm_container_registry" "acr" {
-  name                = azurerm_container_registry.acr.name
-  resource_group_name = azurerm_resource_group.aks_rg.name
-}
+# Will revisit this.
 
-# Grant the AKS cluster's managed identity access to pull from the ACR
-resource "azurerm_role_assignment" "acr_pull_role" {
-  scope                = data.azurerm_container_registry.acr.id
-  role_definition_name = "AcrPull"
-  principal_id         = azurerm_kubernetes_cluster.aks_cluster.kubelet_identity[0].object_id
-}
+# # Use the ACR's ID to get its Resource ID
+# data "azurerm_container_registry" "acr" {
+#   name                = azurerm_container_registry.acr.name
+#   resource_group_name = azurerm_resource_group.aks_rg.name
+# }
+
+# # Grant the AKS cluster's managed identity access to pull from the ACR
+# resource "azurerm_role_assignment" "acr_pull_role" {
+#   scope                = data.azurerm_container_registry.acr.id
+#   role_definition_name = "AcrPull"
+#   principal_id         = azurerm_kubernetes_cluster.aks_cluster.kubelet_identity[0].object_id
+# }
 
 module "kubernetes" {
     source = "./kubernetes_module"
