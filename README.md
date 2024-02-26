@@ -5,3 +5,6 @@ Includes necessary scripting to bring ArgoCD application online and manage deplo
 
 ## Set Up
 az role assignment create --assignee <principal-appId> --role "Owner" --scope /subscriptions/<subscription-id>
+
+## Set up AKS to access ACR
+az aks update -n myAKSCluster -g myResourceGroup --attach-acr <acr-resource-id>
