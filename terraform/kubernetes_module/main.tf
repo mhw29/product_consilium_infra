@@ -32,4 +32,16 @@ resource "helm_release" "argocd" {
   values     = [templatefile("./kubernetes_module/argocd/values.yaml", {})]
 }
 
+resource "kubernetes_manifest" "namespace" {
+  depends_on = [helm_release.argocd]
+  manifest = yamldecode(templatefile("./kubernetes_module/argocd/namespace.yaml", {}))
+}
+resource "kubernetes_manifest" "application" {
+  depends_on = [kubernetes_manifest.namespace]
+  manifest = yamldecode(templatefile("./kubernetes_module/argocd/application.yaml", {}))
+}
+
+
+
+
 
