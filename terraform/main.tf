@@ -49,7 +49,6 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
     }
 
     key_vault_secrets_provider {
-        enabled = true
         secret_rotation_enabled = true
         rotation_poll_interval = "2m"
     }
