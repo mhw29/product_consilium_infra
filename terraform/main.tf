@@ -48,12 +48,10 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
         type = "SystemAssigned"
     }
 
-    addon_profile {
-        azure_keyvault_secrets_provider {
-            enabled = true
-            secret_rotation_enabled = true
-            rotation_poll_interval = "2m"
-        }
+    azure_keyvault_secrets_provider {
+        enabled = true
+        secret_rotation_enabled = true
+        rotation_poll_interval = "2m"
     }
 }
 
