@@ -48,6 +48,52 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
         type = "SystemAssigned"
     }
 
+    addon_profile {
+        azure_keyvault_secrets_provider {
+            enabled = true
+            secret_rotation_enabled = true
+            rotation_poll_interval = "2m"
+        }
+    }
+}
+
+data "azurerm_client_config" "current" {}
+
+output "tenant_id" {
+  value = data.azurerm_client_config.current.tenant_id
+}
+
+resource "azurerm_key_vault" "key_vault" {
+    name                        = "productconsiliumkv"
+    location                    = azurerm_resource_group.aks_rg.location
+    resource_group_name         = azurerm_resource_group.aks_rg.name
+    tenant_id                   = data.azurerm_client_config.current.tenant_id
+    sku_name                    = "standard"
+
+    soft_delete_retention_days  = 7
+    purge_protection_enabled    = false
+
+    network_acls {
+        default_action             = "Allow"
+        bypass                     = "AzureServices"
+    }
+
+    access_policy {
+        tenant_id = data.azurerm_client_config.current.tenant_id
+        object_id = azurerm_kubernetes_cluster.aks_cluster.kubelet_identity[0].object_id
+
+        key_permissions = [
+            "get",
+        ]
+
+        secret_permissions = [
+            "get",
+        ]
+
+        certificate_permissions = [
+            "get",
+        ]
+    }
 }
 
 resource "azurerm_postgresql_server" "postgres_db" {
