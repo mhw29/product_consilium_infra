@@ -5,3 +5,4 @@ resources:
 # - configmap.yaml
 #- namespace.yaml
 - service.yaml
+- secret-provider-class.yaml
