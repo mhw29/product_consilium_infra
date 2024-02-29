@@ -80,15 +80,15 @@ resource "azurerm_key_vault" "key_vault" {
         object_id = azurerm_kubernetes_cluster.aks_cluster.kubelet_identity[0].object_id
 
         key_permissions = [
-            "get",
+            "Get",
         ]
 
         secret_permissions = [
-            "get",
+            "Get",
         ]
 
         certificate_permissions = [
-            "get",
+            "Get",
         ]
     }
 }
