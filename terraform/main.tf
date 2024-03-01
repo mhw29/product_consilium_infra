@@ -75,23 +75,6 @@ resource "azurerm_key_vault" "key_vault" {
         default_action             = "Allow"
         bypass                     = "AzureServices"
     }
-
-    access_policy {
-        tenant_id = data.azurerm_client_config.current.tenant_id
-        object_id = azurerm_kubernetes_cluster.aks_cluster.kubelet_identity[0].object_id
-
-        key_permissions = [
-            "Get","List"
-        ]
-
-        secret_permissions = [
-            "Get","List"
-        ]
-
-        certificate_permissions = [
-            "Get","List"
-        ]
-    }
 }
 
 resource "azurerm_role_assignment" "key_vault_secrets_user" {
