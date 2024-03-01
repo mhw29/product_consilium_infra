@@ -94,6 +94,12 @@ resource "azurerm_key_vault" "key_vault" {
     }
 }
 
+resource "azurerm_role_assignment" "key_vault_secrets_user" {
+  scope                = azurerm_key_vault.key_vault.id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = azurerm_kubernetes_cluster.aks_cluster.identity[0].principal_id
+}
+
 resource "azurerm_postgresql_server" "postgres_db" {
     name                          = "productconsilium-postgres"
     location                      = azurerm_resource_group.aks_rg.location
