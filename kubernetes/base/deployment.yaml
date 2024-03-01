@@ -19,3 +19,20 @@ spec:
         image: productconsilium.azurecr.io/productconsilium:5e0a6824f01e28c5cba43fd1249188488f7cf0a7
         ports:
         - containerPort: 8000
+        volumeMounts:
+        - name: secrets-store-inline
+          mountPath: "/mnt/secrets-store"
+          readOnly: true
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: azure-kvname-system-msi-postgres-password
+              key: postgres-password
+      volumes:
+      - name: secrets-store-inline
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: "azure-kvname-system-msi"
