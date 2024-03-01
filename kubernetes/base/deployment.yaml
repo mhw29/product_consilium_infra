@@ -35,4 +35,4 @@ spec:
           driver: secrets-store.csi.k8s.io
           readOnly: true
           volumeAttributes:
-            secretProviderClass: "azure-kvname-system-msi"
+            secretProviderClass: "dev-azure-kvname-system-msi"
