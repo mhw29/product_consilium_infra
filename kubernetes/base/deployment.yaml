@@ -28,6 +28,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: postgres-password
+              key: postgres-password
       volumes:
       - name: secrets-store-inline
         csi:
