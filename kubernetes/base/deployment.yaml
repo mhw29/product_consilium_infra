@@ -23,12 +23,6 @@ spec:
         - name: secrets-store-inline
           mountPath: "/mnt/secrets-store"
           readOnly: true
-        env:
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: postgres-password
-              key: 237cc553c59f47ce948b97a7a0b3c866
       volumes:
       - name: secrets-store-inline
         csi:
