@@ -19,16 +19,6 @@ spec:
         image: productconsilium.azurecr.io/productconsilium:5e0a6824f01e28c5cba43fd1249188488f7cf0a7
         ports:
         - containerPort: 8000
-        volumeMounts:
-        - name: secrets-store-inline
-          mountPath: "/mnt/secrets-store"
-          readOnly: true
-      volumes:
-      - name: secrets-store-inline
-        csi:
-          driver: secrets-store.csi.k8s.io
-          readOnly: true
-          volumeAttributes:
-            secretProviderClass: "dev-azure-kvname-system-msi"
+
 
 
