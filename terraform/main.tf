@@ -1,12 +1,12 @@
 resource "azurerm_dns_zone" "hosted_zone" {
     name                = "productconsilium.com"
-    resource_group_name = azurerm_resource_group.aks_rg.name
+    resource_group_name = azurerm_resource_group.current.name
 }
 
 resource "azurerm_container_registry" "acr" {
     name                     = "productconsilium"
-    resource_group_name      = azurerm_resource_group.aks_rg.name
-    location                 = azurerm_resource_group.aks_rg.location
+    resource_group_name      = azurerm_resource_group.current.name
+    location                 = azurerm_resource_group.current.location
     sku                      = "Standard"
     admin_enabled            = true
 }
