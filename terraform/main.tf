@@ -17,12 +17,12 @@ data "azurerm_client_config" "current" {}
 
 module "kubernetes" {
     source = "./kubernetes"
-    host                   = azurerm_kubernetes_cluster.current.kube_config.0.host
-    username               = azurerm_kubernetes_cluster.current.kube_config.0.username
-    password               = azurerm_kubernetes_cluster.current.kube_config.0.password
-    client_certificate     = base64decode(azurerm_kubernetes_cluster.current.kube_config.0.client_certificate)
-    client_key             = base64decode(azurerm_kubernetes_cluster.current.kube_config.0.client_key)
-    cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.current.kube_config.0.cluster_ca_certificate)
+    host                   = module.aks.kube_config.0.host
+    username               = module.aks.current.kube_config.0.username
+    password               = module.aks.current.kube_config.0.password
+    client_certificate     = base64decode(module.aks.kube_config.0.client_certificate)
+    client_key             = base64decode(module.aks.kube_config.0.client_key)
+    cluster_ca_certificate = base64decode(module.aks.kube_config.0.cluster_ca_certificate)
 }
 
 module "aks" {
