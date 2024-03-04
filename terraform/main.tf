@@ -15,14 +15,19 @@ data "azurerm_subscription" "primary" {}
 
 data "azurerm_client_config" "current" {}
 
-module "kubernetes" {
-    source = "./kubernetes"
-    host                   = module.aks.host
-    username               = module.aks.username
-    password               = module.aks.password
-    client_certificate     = module.aks.client_certificate
-    client_key             = module.aks.client_key
-    cluster_ca_certificate = module.aks.cluster_ca_certificate
+# module "kubernetes" {
+#     source = "./kubernetes"
+#     host                   = module.aks.host
+#     username               = module.aks.username
+#     password               = module.aks.password
+#     client_certificate     = module.aks.client_certificate
+#     client_key             = module.aks.client_key
+#     cluster_ca_certificate = module.aks.cluster_ca_certificate
+# }
+resource "kubernetes_namespace" "argocd" {
+  metadata {
+    name = "argocd"
+  }
 }
 
 module "aks" {
