@@ -152,6 +152,6 @@ resource "azurerm_resource_group" "current" {
 resource "azurerm_role_assignment" "key_vault_secrets_user" {
   scope                = module.key_vault.key_vault_id
   role_definition_name = "Key Vault Secrets User"
-  principal_id         = module.aks.identity[0].principal_id
+  principal_id         = module.aks.principal_id
 }
 
