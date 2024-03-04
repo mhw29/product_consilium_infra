@@ -1,7 +1,7 @@
 resource "azurerm_postgresql_server" "postgres_db" {
-    name                          = "productconsilium-postgres"
-    location                      = azurerm_resource_group.aks_rg.location
-    resource_group_name           = azurerm_resource_group.aks_rg.name
+    name                          = var.postgres_dbname
+    resource_group_name           = var.resource_group_name
+    location                      = var.resource_group_location
     sku_name                      = "B_Gen5_1"
     storage_mb                    = 5120
     version                       = "11"
