@@ -112,11 +112,11 @@ resource "azurerm_role_assignment" "current" {
     azurerm_resource_group.current
   ]
 }
-resource "kubernetes_namespace" "eso" {
-  metadata {
-    name = "external-secrets-operator"
-  }
-}
+# resource "kubernetes_namespace" "eso" {
+#   metadata {
+#     name = "external-secrets-operator"
+#   }
+# }
 
 // the `e2e` pod itself runs with workload identity and
 // does not rely on client credentials.
