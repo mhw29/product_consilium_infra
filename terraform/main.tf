@@ -120,35 +120,35 @@ resource "azurerm_role_assignment" "current" {
 
 // the `e2e` pod itself runs with workload identity and
 // does not rely on client credentials.
-resource "kubernetes_service_account" "e2e" {
-  metadata {
-    name      = "external-secrets-e2e"
-    namespace = "default"
-    annotations = {
-      "azure.workload.identity/client-id" = module.e2e_sp.application_id
-      "azure.workload.identity/tenant-id" = data.azurerm_client_config.current.tenant_id
-    }
-    labels = {
-      "azure.workload.identity/use" = "true"
-    }
-  }
-  depends_on = [module.aks, kubernetes_namespace.eso]
-}
+# resource "kubernetes_service_account" "e2e" {
+#   metadata {
+#     name      = "external-secrets-e2e"
+#     namespace = "default"
+#     annotations = {
+#       "azure.workload.identity/client-id" = module.e2e_sp.application_id
+#       "azure.workload.identity/tenant-id" = data.azurerm_client_config.current.tenant_id
+#     }
+#     labels = {
+#       "azure.workload.identity/use" = "true"
+#     }
+#   }
+#   depends_on = [module.aks, kubernetes_namespace.eso]
+# }
 
-resource "kubernetes_service_account" "current" {
-  metadata {
-    name      = "external-secrets-operator"
-    namespace = "external-secrets-operator"
-    annotations = {
-      "azure.workload.identity/client-id" = module.test_sp.application_id
-      "azure.workload.identity/tenant-id" = data.azurerm_client_config.current.tenant_id
-    }
-    labels = {
-      "azure.workload.identity/use" = "true"
-    }
-  }
-  depends_on = [module.aks, kubernetes_namespace.eso]
-}
+# resource "kubernetes_service_account" "current" {
+#   metadata {
+#     name      = "external-secrets-operator"
+#     namespace = "external-secrets-operator"
+#     annotations = {
+#       "azure.workload.identity/client-id" = module.test_sp.application_id
+#       "azure.workload.identity/tenant-id" = data.azurerm_client_config.current.tenant_id
+#     }
+#     labels = {
+#       "azure.workload.identity/use" = "true"
+#     }
+#   }
+#   depends_on = [module.aks, kubernetes_namespace.eso]
+# }
 resource "azurerm_resource_group" "current" {
     name     = "product-consilium-resource-group"
     location = "centralus"
