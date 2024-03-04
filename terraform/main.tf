@@ -150,8 +150,8 @@ resource "azurerm_resource_group" "current" {
 }
 
 resource "azurerm_role_assignment" "key_vault_secrets_user" {
-  scope                = azurerm_key_vault.key_vault.id
+  scope                = module.key_vault.key_vault_id
   role_definition_name = "Key Vault Secrets User"
-  principal_id         = azurerm_kubernetes_cluster.current.identity[0].principal_id
+  principal_id         = module.aks.identity[0].principal_id
 }
 
