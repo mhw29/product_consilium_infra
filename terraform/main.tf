@@ -77,7 +77,7 @@ module "postgres" {
 }
 
 module "test_sp" {
-  source = "./service-principal"
+  source = "./azure/service-principal"
 
   application_display_name = "test_sp_productconsilium"
   application_owners       = [data.azurerm_client_config.current.object_id]
@@ -90,7 +90,7 @@ module "test_sp" {
 }
 
 module "e2e_sp" {
-  source = "./service-principal"
+  source = "./azure/service-principal"
 
   application_display_name = "e2e_sp_productconsilium"
   application_owners       = [data.azurerm_client_config.current.object_id]
