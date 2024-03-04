@@ -43,7 +43,7 @@ module "aks" {
 }
 
 module "key_vault" {
-    source = "./azure/key_vault"
+    source = "./azure/key-vault"
     key_vault_display_name  = "productconsiliumkv"
     resource_group_location = azurerm_resource_group.current.location
     resource_group_name     = azurerm_resource_group.current.name
