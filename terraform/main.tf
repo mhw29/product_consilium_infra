@@ -35,7 +35,7 @@ module "aks" {
     default_node_pool_name          = "default"
     default_node_pool_node_count    = 1
     default_node_pool_vm_size       = "Standard_B2s"
-    cluster_tags                    = ""
+    cluster_tags                    = []
 
     depends_on = [
         azurerm_resource_group.current
@@ -60,7 +60,7 @@ module "key_vault" {
 module "workload-identity" {
     source      = "./azure/workload-identity"
     tenant_id   = data.azurerm_client_config.current.tenant_id
-    tags        = ""
+    tags        = []
 }
 
 module "postgres" {
