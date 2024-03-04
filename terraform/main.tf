@@ -24,11 +24,11 @@ module "kubernetes" {
     client_key             = module.aks.client_key
     cluster_ca_certificate = module.aks.cluster_ca_certificate
 }
-resource "kubernetes_namespace" "argocd" {
-  metadata {
-    name = "argocd"
-  }
-}
+# resource "kubernetes_namespace" "argocd" {
+#   metadata {
+#     name = "argocd"
+#   }
+# }
 
 module "aks" {
     source                          = "./azure/aks"
