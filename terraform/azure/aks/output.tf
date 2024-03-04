@@ -7,3 +7,7 @@ output "kube_config" {
 
   sensitive = true
 }
+
+output "principal_id" {
+  value = azurerm_kubernetes_cluster.current.identity[0].principal_id
+}
