@@ -23,11 +23,6 @@ module "kubernetes" {
     client_certificate     = module.aks.client_certificate
     client_key             = module.aks.client_key
     cluster_ca_certificate = module.aks.cluster_ca_certificate
-
-    depends_on = [
-        azurerm_resource_group.current,
-        module.aks
-    ]
 }
 
 module "aks" {
