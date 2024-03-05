@@ -1,6 +1,10 @@
 resource "azurerm_dns_zone" "current" {
     name                = "productconsilium.com"
     resource_group_name = azurerm_resource_group.current.name
+
+    depends_on = [
+        azurerm_resource_group.current
+    ]
 }
 
 resource "azurerm_container_registry" "current" {
@@ -9,6 +13,10 @@ resource "azurerm_container_registry" "current" {
     location                 = azurerm_resource_group.current.location
     sku                      = "Standard"
     admin_enabled            = true
+
+    depends_on = [
+        azurerm_resource_group.current
+    ]
 }
 
 data "azurerm_subscription" "primary" {}
@@ -58,7 +66,9 @@ module "key_vault" {
     eso_e2e_sp_object_id    = module.e2e_sp.sp_object_id
 
     depends_on = [
-        azurerm_resource_group.current
+        azurerm_resource_group.current,
+        module.test_sp,
+        module.e2e_sp
     ]
 }
 
@@ -90,7 +100,8 @@ module "test_sp" {
   subject                  = "system:serviceaccount:${var.sa_namespace}:${var.sa_name}"
 
   depends_on = [
-    azurerm_resource_group.current
+    azurerm_resource_group.current,
+    module.aks
   ]
 }
 
@@ -101,6 +112,11 @@ module "e2e_sp" {
   application_owners       = [data.azurerm_client_config.current.object_id]
   issuer                   = module.aks.cluster_issuer_url
   subject                  = "system:serviceaccount:default:external-secrets-e2e"
+
+  depends_on = [
+    azurerm_resource_group.current,
+    module.aks
+  ]
 }
 
 resource "azurerm_role_assignment" "current" {
@@ -109,7 +125,8 @@ resource "azurerm_role_assignment" "current" {
   principal_id         = module.test_sp.sp_id
 
   depends_on = [
-    azurerm_resource_group.current
+    azurerm_resource_group.current,
+    module.test_sp
   ]
 }
 # resource "kubernetes_namespace" "eso" {
@@ -158,5 +175,10 @@ resource "azurerm_role_assignment" "key_vault_secrets_user" {
   scope                = module.key_vault.key_vault_id
   role_definition_name = "Key Vault Secrets User"
   principal_id         = module.aks.principal_id
+
+  depends_on = [
+    module.key_vault,
+    module.aks
+  ]
 }
 
