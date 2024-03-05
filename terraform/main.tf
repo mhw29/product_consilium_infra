@@ -1,9 +1,9 @@
-resource "azurerm_dns_zone" "hosted_zone" {
+resource "azurerm_dns_zone" "current" {
     name                = "productconsilium.com"
     resource_group_name = azurerm_resource_group.current.name
 }
 
-resource "azurerm_container_registry" "acr" {
+resource "azurerm_container_registry" "current" {
     name                     = "productconsilium"
     resource_group_name      = azurerm_resource_group.current.name
     location                 = azurerm_resource_group.current.location
