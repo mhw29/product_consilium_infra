@@ -1,11 +1,13 @@
 terraform {
-        backend "remote" {
-                organization = "mahwill29"
+  cloud {
+    organization = "mahwill29"
+    ## Required for Terraform Enterprise; Defaults to app.terraform.io for Terraform Cloud
+    hostname = "app.terraform.io"
 
-                workspaces {
-                        name = "product-consilium-dev"
-                }
-        }
+    workspaces {
+      name = "product-consilium-dev"
+    }
+  }
 }
 
 provider "azurerm" {
