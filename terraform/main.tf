@@ -180,3 +180,9 @@ resource "azurerm_role_assignment" "key_vault_secrets_user" {
   ]
 }
 
+resource "kubernetes_namespace" "argo" {
+  metadata {
+    name = "argocd"
+  }
+}
+
