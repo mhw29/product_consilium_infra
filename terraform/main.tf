@@ -198,7 +198,7 @@ resource "helm_release" "argocd" {
 
   # Ensure the namespace exists
   depends_on = [
-    kubernetes_namespace.argocd
+    kubernetes_namespace.argo
   ]
 }
 
