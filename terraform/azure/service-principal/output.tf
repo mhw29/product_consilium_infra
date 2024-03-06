@@ -7,3 +7,7 @@ output "sp_id" {
 output "sp_object_id" {
   value = azuread_service_principal.current.object_id
 }
+output "sp_password" {
+  value     = azuread_service_principal_password.current.value
+  sensitive = true
+}

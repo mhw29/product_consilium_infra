@@ -222,6 +222,19 @@ resource "helm_release" "external_secrets" {
 
 }
 
+resource "kubernetes_secret" "sp_credentials" {
+  metadata {
+    name      = "azure-secret-sp"
+    namespace = "external-secrets" 
+  }
+
+  data = {
+    ClientID     = base64encode(module.e2e_sp.application_id)
+    ClientSecret = base64encode(module.e2e_sp.sp_password)
+  }
+}
+
+
 
 resource "kubernetes_manifest" "product_consilium_argocd_application" {
   provider = kubernetes
