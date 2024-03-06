@@ -57,19 +57,6 @@ resource "azurerm_key_vault" "current" {
       "Recover"
     ]
   }
-  access_policy {
-    tenant_id = var.tenant_id
-    object_id = var.eso_sp_object_id
-
-    secret_permissions = [
-      "Get",
-      "Set",
-      "Delete",
-      "Purge",
-      "Recover",
-    ]
-
-  }
 
   access_policy {
     tenant_id = var.tenant_id

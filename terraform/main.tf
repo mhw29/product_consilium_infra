@@ -62,12 +62,10 @@ module "key_vault" {
     resource_group_name     = azurerm_resource_group.current.name
     tenant_id               = data.azurerm_client_config.current.tenant_id
     client_object_id        = data.azurerm_client_config.current.object_id
-    eso_sp_object_id        = module.test_sp.sp_object_id
     eso_e2e_sp_object_id    = module.e2e_sp.sp_object_id
 
     depends_on = [
         azurerm_resource_group.current,
-        module.test_sp,
         module.e2e_sp
     ]
 }

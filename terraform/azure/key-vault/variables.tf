@@ -18,10 +18,6 @@ variable "client_object_id" {
   type        = string
   description = "The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault"
 }
-variable "eso_sp_object_id" {
-  type        = string
-  description = "The object ID of the ESO service account"
-}
 
 variable "eso_e2e_sp_object_id" {
   type        = string
