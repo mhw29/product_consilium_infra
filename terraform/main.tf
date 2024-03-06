@@ -285,6 +285,7 @@ resource "kubernetes_manifest" "external_secret" {
     kind       = "ExternalSecret"
     metadata = {
       name = "productconsilium-externalsecrets"
+      namespace = kubernetes_namespace.product_consilium.metadata[0].name
     }
     spec = {
       refreshInterval = "1h"
