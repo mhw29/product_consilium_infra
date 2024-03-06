@@ -201,6 +201,39 @@ resource "helm_release" "argocd" {
     kubernetes_namespace.argo
   ]
 }
+resource "kubernetes_manifest" "product_consilium_argocd_application" {
+  provider = kubernetes
+
+  manifest = {
+    apiVersion = "argoproj.io/v1alpha1"
+    kind       = "Application"
+    metadata = {
+      name      = "productconsilium"
+      namespace = "argocd"
+    }
+    spec = {
+      project = "default"
+
+      source = {
+        repoURL        = "https://github.com/mhw29/product_consilium_infra.git"
+        targetRevision = "HEAD"
+        path           = "kubernetes/overlays/dev"
+      }
+
+      destination = {
+        server    = "https://kubernetes.default.svc"
+        namespace = "productconsilium"
+      }
+
+      syncPolicy = {
+        automated = {
+          prune      = true
+          selfHeal   = true
+        }
+      }
+    }
+  }
+}
 
 
 

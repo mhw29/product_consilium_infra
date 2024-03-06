@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: web
-        image: productconsilium.azurecr.io/productconsilium:5e0a6824f01e28c5cba43fd1249188488f7cf0a7
+        image: productconsilium.azurecr.io/productconsilium:78cc7a033b364ccd06dcc95c1f63ee19e950e5f1
         ports:
         - containerPort: 8000
 
