@@ -121,7 +121,7 @@ module "e2e_sp" {
 
 resource "azurerm_role_assignment" "current" {
   scope                = data.azurerm_subscription.primary.id
-  role_definition_name = "Owner"
+  role_definition_name = "Key Vault Secrets User"
   principal_id         = module.test_sp.sp_id
 
   depends_on = [
@@ -129,11 +129,11 @@ resource "azurerm_role_assignment" "current" {
     module.test_sp
   ]
 }
-# resource "kubernetes_namespace" "eso" {
-#   metadata {
-#     name = "external-secrets-operator"
-#   }
-# }
+resource "kubernetes_namespace" "eso" {
+  metadata {
+    name = "external-secrets-operator"
+  }
+}
 
 // the `e2e` pod itself runs with workload identity and
 // does not rely on client credentials.
