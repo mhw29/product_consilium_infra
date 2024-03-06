@@ -9,3 +9,5 @@ az role assignment create --assignee <principal-appId> --role "Owner" --scope /s
 ## Set up AKS to access ACR
 Need to figure out how to get this into terraform so that pods can properly access ACR as they are created. 
 az aks update -n myAKSCluster -g myResourceGroup --attach-acr <acr-resource-id>
+
+
