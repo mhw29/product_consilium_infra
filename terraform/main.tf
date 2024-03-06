@@ -277,6 +277,37 @@ resource "kubernetes_manifest" "secret_store" {
   ]
 }
 
+resource "kubernetes_manifest" "external_secret" {
+  provider = kubernetes
+
+  manifest = {
+    apiVersion = "external-secrets.io/v1alpha1"
+    kind       = "ExternalSecret"
+    metadata = {
+      name = "productconsilium-externalsecrets"
+    }
+    spec = {
+      refreshInterval = "1h"
+      secretStoreRef = {
+        kind = "SecretStore"
+        name = "azure-backend"
+      }
+      target = {
+        name = "productconsilium-externalsecrets"
+      }
+      data = [
+        {
+          secretKey = "postgresPassword"
+          remoteRef = {
+            key = "postgres-password"
+          }
+        },
+      ]
+    }
+  }
+}
+
+
 resource "kubernetes_manifest" "product_consilium_argocd_application" {
   provider = kubernetes
 
