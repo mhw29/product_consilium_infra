@@ -180,6 +180,17 @@ resource "azurerm_role_assignment" "key_vault_secrets_user" {
   ]
 }
 
+resource "azurerm_role_assignment" "azure_container_registry_pull" {
+  scope                = azurerm_container_registry.current.id
+  role_definition_name = "AcrPull"
+  principal_id         = module.aks.principal_id
+
+  depends_on = [
+    azurerm_container_registry.current,
+    module.aks
+  ]
+}
+
 resource "kubernetes_namespace" "argo" {
   metadata {
     name = "argocd"
