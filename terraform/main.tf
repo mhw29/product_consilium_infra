@@ -288,7 +288,7 @@ resource "kubernetes_manifest" "external_secret" {
       namespace = kubernetes_namespace.product_consilium.metadata[0].name
     }
     spec = {
-      refreshInterval = "1h"
+      refreshInterval = "1h0m0s"
       secretStoreRef = {
         kind = "SecretStore"
         name = "azure-backend"
