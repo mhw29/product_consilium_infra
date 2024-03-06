@@ -212,6 +212,17 @@ resource "helm_release" "argocd" {
     kubernetes_namespace.argo
   ]
 }
+
+resource "helm_release" "external_secrets" {
+  name       = "external-secrets"
+  repository = "https://charts.external-secrets.io"
+  chart      = "external-secrets"
+  namespace  = "external-secrets"
+  create_namespace = true
+
+}
+
+
 resource "kubernetes_manifest" "product_consilium_argocd_application" {
   provider = kubernetes
 
