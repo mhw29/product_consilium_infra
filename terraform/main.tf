@@ -225,7 +225,7 @@ resource "helm_release" "external_secrets" {
 resource "kubernetes_secret" "sp_credentials" {
   metadata {
     name      = "azure-secret-sp"
-    namespace = "external-secrets" 
+    namespace = kubernetes_namespace.product_consilium.metadata[0].name
   }
 
   data = {
@@ -248,7 +248,7 @@ resource "kubernetes_manifest" "secret_store" {
     kind       = "SecretStore"
     metadata = {
       name      = "azure-backend"
-      namespace = "default" # Match this with the namespace of the Kubernetes Secret
+      namespace = kubernetes_namespace.product_consilium.metadata[0].name
     }
     spec = {
       provider = {
