@@ -234,7 +234,48 @@ resource "kubernetes_secret" "sp_credentials" {
   }
 }
 
+resource "kubernetes_namespace" "product_consilium" {
+  metadata {
+    name = "productconsilium"
+  }
+}
 
+resource "kubernetes_manifest" "secret_store" {
+  provider = kubernetes
+
+  manifest = {
+    apiVersion = "external-secrets.io/v1alpha1"
+    kind       = "SecretStore"
+    metadata = {
+      name      = "azure-backend"
+      namespace = "default" # Match this with the namespace of the Kubernetes Secret
+    }
+    spec = {
+      provider = {
+        azurekv = {
+          tenantId  = data.azurerm_client_config.current.tenant_id
+          vaultUrl  = module.key_vault.key_vault_uri
+          authSecretRef = {
+            clientId = {
+              name = kubernetes_secret.sp_credentials.metadata[0].name
+              key  = "ClientID"
+            }
+            clientSecret = {
+              name = kubernetes_secret.sp_credentials.metadata[0].name
+              key  = "ClientSecret"
+            }
+          }
+        }
+      }
+    }
+  }
+
+  depends_on = [
+    module.key_vault,
+    module.aks,
+    kubernetes_namespace.product_consilium
+  ]
+}
 
 resource "kubernetes_manifest" "product_consilium_argocd_application" {
   provider = kubernetes
