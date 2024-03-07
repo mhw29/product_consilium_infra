@@ -49,6 +49,7 @@ module "aks" {
     default_node_pool_node_count    = 1
     default_node_pool_vm_size       = "Standard_B2s"
     cluster_tags                    = {}
+    user_assigned_identity          = azurerm_user_assigned_identity.aks_identity.id
 
     depends_on = [
         azurerm_resource_group.current
@@ -200,6 +201,36 @@ resource "azurerm_role_assignment" "azure_container_registry_pull" {
     module.aks
   ]
 }
+
+## Identity for kublet
+resource "azurerm_user_assigned_identity" "aks_identity" {
+  resource_group_name = azurerm_resource_group.current.name
+  location            = azurerm_resource_group.current.location
+  name                = "productconsilium-identity"
+}
+
+resource "azurerm_role_assignment" "aks_identity_acr" {
+  scope                = azurerm_container_registry.current.id
+  role_definition_name = "AcrPull"
+  principal_id         = azurerm_user_assigned_identity.aks_identity.principal_id
+
+  depends_on = [
+    azurerm_container_registry.current,
+    module.aks
+  ]
+}
+
+resource "azurerm_role_assignment" "aks_identity_kv" {
+  scope                = module.key_vault.key_vault_id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = azurerm_user_assigned_identity.aks_identity.principal_id
+
+  depends_on = [
+    module.key_vault,
+    module.aks
+  ]
+}
+
 
 resource "kubernetes_namespace" "argo" {
   metadata {

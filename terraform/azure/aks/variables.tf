@@ -46,3 +46,8 @@ variable "cluster_tags" {
   type        = map(string)
   description = "A mapping of tags to assign to the cluster"
 }
+
+variable "user_assigned_identity" {
+  type        = string
+  description = "The ID of the User Assigned Identity which should be associated with the Managed Kubernetes Cluster"
+}
