@@ -182,7 +182,7 @@ resource "azurerm_role_assignment" "key_vault_secrets_user" {
 resource "azurerm_role_assignment" "key_vault_secrets_e2e" {
   scope                = module.key_vault.key_vault_id
   role_definition_name = "Key Vault Secrets User"
-  principal_id         = module.e2e_sp.principal_id
+  principal_id         = module.e2e_sp.sp_id
 
   depends_on = [
     module.key_vault,
