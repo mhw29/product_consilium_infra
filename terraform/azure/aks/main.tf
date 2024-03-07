@@ -15,7 +15,7 @@ resource "azurerm_kubernetes_cluster" "current" {
 
   identity {
     type = "UserAssigned"
-    identity_ids = [ var.user_assigned_identity_id ]
+    identity_ids = [ var.user_assigned_identity ]
   }
 
   tags = var.cluster_tags
