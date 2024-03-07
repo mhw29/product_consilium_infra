@@ -229,7 +229,7 @@ resource "kubernetes_secret" "sp_credentials" {
   }
 
   data = {
-    ClientID     = base64encode(module.e2e_sp.application_id)
+    ClientID     = base64encode(module.e2e_sp.sp_id)
     ClientSecret = base64encode(module.e2e_sp.sp_password)
   }
 }
@@ -295,6 +295,7 @@ resource "kubernetes_manifest" "external_secret" {
       }
       target = {
         name = "productconsilium-externalsecrets"
+        creationPolicy = "Owner"
       }
       data = [
         {
