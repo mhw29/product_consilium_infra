@@ -179,6 +179,16 @@ resource "azurerm_role_assignment" "key_vault_secrets_user" {
     module.aks
   ]
 }
+resource "azurerm_role_assignment" "key_vault_secrets_e2e" {
+  scope                = module.key_vault.key_vault_id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = module.e2e_sp.principal_id
+
+  depends_on = [
+    module.key_vault,
+    module.aks
+  ]
+}
 
 resource "azurerm_role_assignment" "azure_container_registry_pull" {
   scope                = azurerm_container_registry.current.id
