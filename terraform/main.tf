@@ -170,16 +170,16 @@ resource "azurerm_resource_group" "current" {
     location = "centralus"
 }
 
-resource "azurerm_role_assignment" "key_vault_secrets_user" {
-  scope                = module.key_vault.key_vault_id
-  role_definition_name = "Key Vault Secrets User"
-  principal_id         = module.aks.principal_id
+# resource "azurerm_role_assignment" "key_vault_secrets_user" {
+#   scope                = module.key_vault.key_vault_id
+#   role_definition_name = "Key Vault Secrets User"
+#   principal_id         = module.aks.principal_id
 
-  depends_on = [
-    module.key_vault,
-    module.aks
-  ]
-}
+#   depends_on = [
+#     module.key_vault,
+#     module.aks
+#   ]
+# }
 resource "azurerm_role_assignment" "key_vault_secrets_e2e" {
   scope                = module.key_vault.key_vault_id
   role_definition_name = "Key Vault Secrets User"
@@ -191,16 +191,16 @@ resource "azurerm_role_assignment" "key_vault_secrets_e2e" {
   ]
 }
 
-resource "azurerm_role_assignment" "azure_container_registry_pull" {
-  scope                = azurerm_container_registry.current.id
-  role_definition_name = "AcrPull"
-  principal_id         = module.aks.principal_id
+# resource "azurerm_role_assignment" "azure_container_registry_pull" {
+#   scope                = azurerm_container_registry.current.id
+#   role_definition_name = "AcrPull"
+#   principal_id         = module.aks.principal_id
 
-  depends_on = [
-    azurerm_container_registry.current,
-    module.aks
-  ]
-}
+#   depends_on = [
+#     azurerm_container_registry.current,
+#     module.aks
+#   ]
+# }
 
 ## Identity for kublet
 resource "azurerm_user_assigned_identity" "aks_identity" {
