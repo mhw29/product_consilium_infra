@@ -348,6 +348,11 @@ resource "kubernetes_manifest" "external_secret" {
       ]
     }
   }
+  depends_on = [
+    module.key_vault,
+    module.aks,
+    kubernetes_namespace.product_consilium
+  ]
 }
 
 
@@ -383,6 +388,11 @@ resource "kubernetes_manifest" "product_consilium_argocd_application" {
       }
     }
   }
+  depends_on = [
+    module.key_vault,
+    module.aks,
+    kubernetes_namespace.product_consilium
+  ]
 }
 
 
