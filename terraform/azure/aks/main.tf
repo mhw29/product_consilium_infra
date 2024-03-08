@@ -13,13 +13,13 @@ resource "azurerm_kubernetes_cluster" "current" {
     vm_size    = var.default_node_pool_vm_size
   }
 
-  # identity {
-  #   type = "UserAssigned"
-  #   identity_ids = [ var.user_assigned_identity ]
-  # }
   identity {
-    type = "SystemAssigned"
+    type = "UserAssigned"
+    identity_ids = [ var.user_assigned_identity ]
   }
+  # identity {
+  #   type = "SystemAssigned"
+  # }
   tags = var.cluster_tags
 
 }
