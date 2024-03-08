@@ -281,109 +281,109 @@ resource "kubernetes_namespace" "product_consilium" {
   }
 }
 
-resource "kubernetes_manifest" "secret_store" {
-  provider = kubernetes
+# resource "kubernetes_manifest" "secret_store" {
+#   provider = kubernetes
 
-  manifest = {
-    apiVersion = "external-secrets.io/v1alpha1"
-    kind       = "SecretStore"
-    metadata = {
-      name      = "azure-backend"
-      namespace = kubernetes_namespace.product_consilium.metadata[0].name
-    }
-    spec = {
-      provider = {
-        azurekv = {
-          tenantId  = data.azurerm_client_config.current.tenant_id
-          vaultUrl  = module.key_vault.key_vault_uri
-          authSecretRef = {
-            clientId = {
-              name = kubernetes_secret.sp_credentials.metadata[0].name
-              key  = "ClientID"
-            }
-            clientSecret = {
-              name = kubernetes_secret.sp_credentials.metadata[0].name
-              key  = "ClientSecret"
-            }
-          }
-        }
-      }
-    }
-  }
+#   manifest = {
+#     apiVersion = "external-secrets.io/v1alpha1"
+#     kind       = "SecretStore"
+#     metadata = {
+#       name      = "azure-backend"
+#       namespace = kubernetes_namespace.product_consilium.metadata[0].name
+#     }
+#     spec = {
+#       provider = {
+#         azurekv = {
+#           tenantId  = data.azurerm_client_config.current.tenant_id
+#           vaultUrl  = module.key_vault.key_vault_uri
+#           authSecretRef = {
+#             clientId = {
+#               name = kubernetes_secret.sp_credentials.metadata[0].name
+#               key  = "ClientID"
+#             }
+#             clientSecret = {
+#               name = kubernetes_secret.sp_credentials.metadata[0].name
+#               key  = "ClientSecret"
+#             }
+#           }
+#         }
+#       }
+#     }
+#   }
 
-  depends_on = [
-    module.key_vault,
-    module.aks,
-    kubernetes_namespace.product_consilium
-  ]
-}
+#   depends_on = [
+#     module.key_vault,
+#     module.aks,
+#     kubernetes_namespace.product_consilium
+#   ]
+# }
 
-resource "kubernetes_manifest" "external_secret" {
-  provider = kubernetes
+# resource "kubernetes_manifest" "external_secret" {
+#   provider = kubernetes
 
-  manifest = {
-    apiVersion = "external-secrets.io/v1alpha1"
-    kind       = "ExternalSecret"
-    metadata = {
-      name = "productconsilium-externalsecrets"
-      namespace = kubernetes_namespace.product_consilium.metadata[0].name
-    }
-    spec = {
-      refreshInterval = "1h0m0s"
-      secretStoreRef = {
-        kind = "SecretStore"
-        name = "azure-backend"
-      }
-      target = {
-        name = "productconsilium-externalsecrets"
-        creationPolicy = "Owner"
-      }
-      data = [
-        {
-          secretKey = "postgresPassword"
-          remoteRef = {
-            key = "postgres-password"
-          }
-        },
-      ]
-    }
-  }
-}
+#   manifest = {
+#     apiVersion = "external-secrets.io/v1alpha1"
+#     kind       = "ExternalSecret"
+#     metadata = {
+#       name = "productconsilium-externalsecrets"
+#       namespace = kubernetes_namespace.product_consilium.metadata[0].name
+#     }
+#     spec = {
+#       refreshInterval = "1h0m0s"
+#       secretStoreRef = {
+#         kind = "SecretStore"
+#         name = "azure-backend"
+#       }
+#       target = {
+#         name = "productconsilium-externalsecrets"
+#         creationPolicy = "Owner"
+#       }
+#       data = [
+#         {
+#           secretKey = "postgresPassword"
+#           remoteRef = {
+#             key = "postgres-password"
+#           }
+#         },
+#       ]
+#     }
+#   }
+# }
 
 
-resource "kubernetes_manifest" "product_consilium_argocd_application" {
-  provider = kubernetes
+# resource "kubernetes_manifest" "product_consilium_argocd_application" {
+#   provider = kubernetes
 
-  manifest = {
-    apiVersion = "argoproj.io/v1alpha1"
-    kind       = "Application"
-    metadata = {
-      name      = "productconsilium"
-      namespace = "argocd"
-    }
-    spec = {
-      project = "default"
+#   manifest = {
+#     apiVersion = "argoproj.io/v1alpha1"
+#     kind       = "Application"
+#     metadata = {
+#       name      = "productconsilium"
+#       namespace = "argocd"
+#     }
+#     spec = {
+#       project = "default"
 
-      source = {
-        repoURL        = "https://github.com/mhw29/product_consilium_infra.git"
-        targetRevision = "HEAD"
-        path           = "kubernetes/overlays/dev"
-      }
+#       source = {
+#         repoURL        = "https://github.com/mhw29/product_consilium_infra.git"
+#         targetRevision = "HEAD"
+#         path           = "kubernetes/overlays/dev"
+#       }
 
-      destination = {
-        server    = "https://kubernetes.default.svc"
-        namespace = "productconsilium"
-      }
+#       destination = {
+#         server    = "https://kubernetes.default.svc"
+#         namespace = "productconsilium"
+#       }
 
-      syncPolicy = {
-        automated = {
-          prune      = true
-          selfHeal   = true
-        }
-      }
-    }
-  }
-}
+#       syncPolicy = {
+#         automated = {
+#           prune      = true
+#           selfHeal   = true
+#         }
+#       }
+#     }
+#   }
+# }
 
 
 
