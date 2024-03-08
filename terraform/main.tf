@@ -212,8 +212,8 @@ resource "azurerm_user_assigned_identity" "aks_identity" {
 resource "azurerm_role_assignment" "aks_identity_acr" {
   scope                = azurerm_container_registry.current.id
   role_definition_name = "AcrPull"
-  principal_id         = azurerm_user_assigned_identity.aks_identity.principal_id
-
+  #principal_id         = azurerm_user_assigned_identity.aks_identity.principal_id
+  principal_id         = module.aks.kubelet_identity 
   depends_on = [
     azurerm_container_registry.current,
     module.aks
@@ -223,7 +223,7 @@ resource "azurerm_role_assignment" "aks_identity_acr" {
 resource "azurerm_role_assignment" "aks_identity_kv" {
   scope                = module.key_vault.key_vault_id
   role_definition_name = "Key Vault Secrets User"
-  principal_id         = azurerm_user_assigned_identity.aks_identity.principal_id
+  principal_id         = module.aks.kubelet_identity
 
   depends_on = [
     module.key_vault,
