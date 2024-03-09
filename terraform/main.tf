@@ -62,7 +62,7 @@ module "key_vault" {
     resource_group_location = azurerm_resource_group.current.location
     resource_group_name     = azurerm_resource_group.current.name
     tenant_id               = data.azurerm_client_config.current.tenant_id
-    client_object_id        = data.azurerm_client_config.current.object_id
+    client_object_id        = module.aks.kubelet_identity
     eso_e2e_sp_object_id    = module.e2e_sp.sp_object_id
 
     depends_on = [
@@ -183,7 +183,7 @@ resource "azurerm_resource_group" "current" {
 resource "azurerm_role_assignment" "key_vault_secrets_e2e" {
   scope                = module.key_vault.key_vault_id
   role_definition_name = "Key Vault Secrets User"
-  principal_id         = module.e2e_sp.sp_id
+  principal_id         = module.aks.kubelet_identity
 
   depends_on = [
     module.key_vault,
@@ -263,17 +263,19 @@ resource "helm_release" "external_secrets" {
 
 }
 
-resource "kubernetes_secret" "sp_credentials" {
-  metadata {
-    name      = "azure-secret-sp"
-    namespace = kubernetes_namespace.product_consilium.metadata[0].name
-  }
+# resource "kubernetes_secret" "sp_credentials" {
+#   metadata {
+#     name      = "azure-secret-sp"
+#     namespace = kubernetes_namespace.product_consilium.metadata[0].name
+#   }
 
-  data = {
-    ClientID     = base64encode(module.e2e_sp.sp_id)
-    ClientSecret = base64encode(module.e2e_sp.sp_password)
-  }
-}
+#   data = {
+#     #ClientID     = base64encode(module.e2e_sp.sp_id)
+#     ClientID     = base64encode(module.aks.kubelet_identity)
+#     #ClientSecret = base64encode(module.e2e_sp.sp_password)
+#     ClientSecret = base64encode(module.aks.password)
+#   }
+# }
 
 resource "kubernetes_namespace" "product_consilium" {
   metadata {
@@ -294,18 +296,9 @@ resource "kubernetes_manifest" "secret_store" {
     spec = {
       provider = {
         azurekv = {
-          tenantId  = data.azurerm_client_config.current.tenant_id
+          authType  = "ManagedIdentity"
+          identityId  = module.aks.kubelet_identity
           vaultUrl  = module.key_vault.key_vault_uri
-          authSecretRef = {
-            clientId = {
-              name = kubernetes_secret.sp_credentials.metadata[0].name
-              key  = "ClientID"
-            }
-            clientSecret = {
-              name = kubernetes_secret.sp_credentials.metadata[0].name
-              key  = "ClientSecret"
-            }
-          }
         }
       }
     }
