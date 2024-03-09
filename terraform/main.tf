@@ -331,11 +331,11 @@ resource "kubernetes_manifest" "secret_store" {
           vaultUrl  = module.key_vault.key_vault_uri
           authSecretRef = {
             clientId = {
-              name = kubernetes_secret.sp_credentials.metadata[0].name
+              name = kubernetes_secret.azure-secret-sp.metadata[0].name
               key  = "ClientID"
             }
             clientSecret = {
-              name = kubernetes_secret.sp_credentials.metadata[0].name
+              name = kubernetes_secret.azure-secret-sp.metadata[0].name
               key  = "ClientSecret"
             }
           }
