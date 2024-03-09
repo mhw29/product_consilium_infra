@@ -294,14 +294,32 @@ resource "azurerm_role_assignment" "eso_key_vault_secrets_user" {
   ]
 }
 
+locals {
+  template_vars = {
+    user_assigned_identity_client_id    = azurerm_user_assigned_identity.external_secrets.client_id
+    tenant_id                           = data.azurerm_client_config.current.tenant_id
+  }
+}
+
 resource "helm_release" "external_secrets" {
   name       = "external-secrets"
-  repository = "https://charts.external-secrets.io"
   chart      = "external-secrets"
-  namespace  = "external-secrets"
-  create_namespace = true
-
+  repository = "https://charts.external-secrets.io"
+  namespace  = kubernetes_namespace.external_secrets.metadata[0].name
+  values     = templatefile("${path.module}/kubernetes/external_secrets/values.yaml", local.template_vars)
+  depends_on = [kubernetes_namespace.external_secrets, azurerm_user_assigned_identity.external_secrets]
 }
+
+
+# resource "helm_release" "external_secrets" {
+#   name       = "external-secrets"
+#   repository = "https://charts.external-secrets.io"
+#   chart      = "external-secrets"
+#   namespace  = "external-secrets"
+#   create_namespace = true
+#   depends_on = azurerm_user_assigned_identity.aks_identity
+
+# }
 resource "kubernetes_secret" "azure-secret-sp" {
   metadata {
     name      = "azure-secret-sp"
