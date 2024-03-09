@@ -297,7 +297,7 @@ resource "kubernetes_manifest" "secret_store" {
       provider = {
         azurekv = {
           authType  = "ManagedIdentity"
-          identityId  = azurerm_user_assigned_identity.aks_identity.id
+          identityId  = module.aks.kubelet_identity
           vaultUrl  = module.key_vault.key_vault_uri
         }
       }
