@@ -56,20 +56,7 @@ module "aks" {
     ]
 }
 
-module "key_vault" {
-    source = "./azure/key-vault"
-    key_vault_display_name  = "productconsiliumkv"
-    resource_group_location = azurerm_resource_group.current.location
-    resource_group_name     = azurerm_resource_group.current.name
-    tenant_id               = data.azurerm_client_config.current.tenant_id
-    client_object_id        = module.aks.kubelet_identity
-    eso_e2e_sp_object_id    = module.e2e_sp.sp_object_id
 
-    depends_on = [
-        azurerm_resource_group.current,
-        module.e2e_sp
-    ]
-}
 
 module "workload-identity" {
     source      = "./azure/workload-identity"
@@ -104,19 +91,7 @@ module "test_sp" {
   ]
 }
 
-module "e2e_sp" {
-  source = "./azure/service-principal"
 
-  application_display_name = "e2e_sp_productconsilium"
-  application_owners       = [data.azurerm_client_config.current.object_id]
-  issuer                   = module.aks.cluster_issuer_url
-  subject                  = "system:serviceaccount:default:external-secrets-e2e"
-
-  depends_on = [
-    azurerm_resource_group.current,
-    module.aks
-  ]
-}
 
 # resource "azurerm_role_assignment" "current" {
 #   scope                = data.azurerm_subscription.primary.id
@@ -254,14 +229,7 @@ resource "helm_release" "argocd" {
   ]
 }
 
-resource "helm_release" "external_secrets" {
-  name       = "external-secrets"
-  repository = "https://charts.external-secrets.io"
-  chart      = "external-secrets"
-  namespace  = "external-secrets"
-  create_namespace = true
 
-}
 
 # resource "kubernetes_secret" "sp_credentials" {
 #   metadata {
@@ -283,6 +251,69 @@ resource "kubernetes_namespace" "product_consilium" {
   }
 }
 
+
+
+##############SECRETS MANAGEMENT VIA EXTERNAL SECRETS##############
+module "key_vault" {
+    source = "./azure/key-vault"
+    key_vault_display_name  = "productconsiliumkv"
+    resource_group_location = azurerm_resource_group.current.location
+    resource_group_name     = azurerm_resource_group.current.name
+    tenant_id               = data.azurerm_client_config.current.tenant_id
+    client_object_id        = module.aks.kubelet_identity
+    eso_e2e_sp_object_id    = module.e2e_sp.sp_object_id
+
+    depends_on = [
+        azurerm_resource_group.current,
+        module.e2e_sp
+    ]
+}
+
+module "e2e_sp" {
+  source = "./azure/service-principal"
+
+  application_display_name = "e2e_sp_productconsilium"
+  application_owners       = [data.azurerm_client_config.current.object_id]
+  issuer                   = module.aks.cluster_issuer_url
+  subject                  = "system:serviceaccount:default:external-secrets-e2e"
+
+  depends_on = [
+    azurerm_resource_group.current,
+    module.aks
+  ]
+}
+
+resource "azurerm_role_assignment" "eso_key_vault_secrets_user" {
+  scope                = module.key_vault.key_vault_id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = module.e2e_sp.sp_id
+
+  depends_on = [
+    module.key_vault,
+    module.aks
+  ]
+}
+
+resource "helm_release" "external_secrets" {
+  name       = "external-secrets"
+  repository = "https://charts.external-secrets.io"
+  chart      = "external-secrets"
+  namespace  = "external-secrets"
+  create_namespace = true
+
+}
+resource "kubernetes_secret" "azure-secret-sp" {
+  metadata {
+    name      = "azure-secret-sp"
+    namespace = kubernetes_namespace.product_consilium.metadata[0].name
+  }
+
+  data = {
+    ClientID     = base64encode(module.e2e_sp.application_id)
+    ClientSecret = base64encode(module.e2e_sp.sp_password)
+  }
+}
+
 resource "kubernetes_manifest" "secret_store" {
   provider = kubernetes
 
@@ -296,9 +327,18 @@ resource "kubernetes_manifest" "secret_store" {
     spec = {
       provider = {
         azurekv = {
-          authType  = "ManagedIdentity"
-          identityId  = module.aks.kubelet_identity
+          tenantId  = data.azurerm_client_config.current.tenant_id
           vaultUrl  = module.key_vault.key_vault_uri
+          authSecretRef = {
+            clientId = {
+              name = kubernetes_secret.sp_credentials.metadata[0].name
+              key  = "ClientID"
+            }
+            clientSecret = {
+              name = kubernetes_secret.sp_credentials.metadata[0].name
+              key  = "ClientSecret"
+            }
+          }
         }
       }
     }
@@ -347,6 +387,12 @@ resource "kubernetes_manifest" "external_secret" {
     kubernetes_namespace.product_consilium
   ]
 }
+
+
+
+
+
+
 
 
 resource "kubernetes_manifest" "product_consilium_argocd_application" {
