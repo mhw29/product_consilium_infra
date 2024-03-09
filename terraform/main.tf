@@ -62,7 +62,7 @@ module "key_vault" {
     resource_group_location = azurerm_resource_group.current.location
     resource_group_name     = azurerm_resource_group.current.name
     tenant_id               = data.azurerm_client_config.current.tenant_id
-    client_object_id        = module.aks.kubelet_identity
+    client_object_id        = azurerm_user_assigned_identity.aks_identity.id
     eso_e2e_sp_object_id    = module.e2e_sp.sp_object_id
 
     depends_on = [
@@ -297,7 +297,7 @@ resource "kubernetes_manifest" "secret_store" {
       provider = {
         azurekv = {
           authType  = "ManagedIdentity"
-          identityId  = module.aks.kubelet_identity
+          identityId  = azurerm_user_assigned_identity.aks_identity.id
           vaultUrl  = module.key_vault.key_vault_uri
         }
       }
