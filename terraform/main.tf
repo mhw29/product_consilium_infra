@@ -300,7 +300,6 @@ resource "helm_release" "external_secrets" {
   chart      = "external-secrets"
   namespace  = "external-secrets"
   create_namespace = true
-  depends_on = azurerm_user_assigned_identity.aks_identity
 
 }
 resource "kubernetes_secret" "azure-secret-sp" {
