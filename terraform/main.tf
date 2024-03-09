@@ -294,32 +294,15 @@ resource "azurerm_role_assignment" "eso_key_vault_secrets_user" {
   ]
 }
 
-locals {
-  template_vars = {
-    user_assigned_identity_client_id    = azurerm_user_assigned_identity.external_secrets.client_id
-    tenant_id                           = data.azurerm_client_config.current.tenant_id
-  }
-}
-
 resource "helm_release" "external_secrets" {
   name       = "external-secrets"
-  chart      = "external-secrets"
   repository = "https://charts.external-secrets.io"
-  namespace  = kubernetes_namespace.external_secrets.metadata[0].name
-  values     = templatefile("${path.module}/kubernetes/external_secrets/values.yaml", local.template_vars)
-  depends_on = [kubernetes_namespace.external_secrets, azurerm_user_assigned_identity.external_secrets]
+  chart      = "external-secrets"
+  namespace  = "external-secrets"
+  create_namespace = true
+  depends_on = azurerm_user_assigned_identity.aks_identity
+
 }
-
-
-# resource "helm_release" "external_secrets" {
-#   name       = "external-secrets"
-#   repository = "https://charts.external-secrets.io"
-#   chart      = "external-secrets"
-#   namespace  = "external-secrets"
-#   create_namespace = true
-#   depends_on = azurerm_user_assigned_identity.aks_identity
-
-# }
 resource "kubernetes_secret" "azure-secret-sp" {
   metadata {
     name      = "azure-secret-sp"
@@ -327,8 +310,8 @@ resource "kubernetes_secret" "azure-secret-sp" {
   }
 
   data = {
-    ClientID     = base64encode(module.e2e_sp.application_id)
-    ClientSecret = base64encode(module.e2e_sp.sp_password)
+    ClientID     = module.e2e_sp.application_id
+    ClientSecret = module.e2e_sp.sp_password
   }
 }
 
