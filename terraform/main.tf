@@ -180,16 +180,16 @@ resource "azurerm_resource_group" "current" {
 #     module.aks
 #   ]
 # }
-resource "azurerm_role_assignment" "key_vault_secrets_e2e" {
-  scope                = module.key_vault.key_vault_id
-  role_definition_name = "Key Vault Secrets User"
-  principal_id         = module.aks.kubelet_identity
+# resource "azurerm_role_assignment" "key_vault_secrets_e2e" {
+#   scope                = module.key_vault.key_vault_id
+#   role_definition_name = "Key Vault Secrets User"
+#   principal_id         = module.aks.kubelet_identity
 
-  depends_on = [
-    module.key_vault,
-    module.aks
-  ]
-}
+#   depends_on = [
+#     module.key_vault,
+#     module.aks
+#   ]
+# }
 
 # resource "azurerm_role_assignment" "azure_container_registry_pull" {
 #   scope                = azurerm_container_registry.current.id
