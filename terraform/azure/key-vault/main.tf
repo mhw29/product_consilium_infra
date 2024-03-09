@@ -44,6 +44,7 @@ resource "azurerm_key_vault" "current" {
     secret_permissions = [
       "Set",
       "Get",
+      "List",
       "Delete",
       "Purge",
       "Recover"

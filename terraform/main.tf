@@ -49,6 +49,7 @@ module "aks" {
     default_node_pool_node_count    = 1
     default_node_pool_vm_size       = "Standard_B2s"
     cluster_tags                    = {}
+    user_assigned_identity          = azurerm_user_assigned_identity.aks_identity.id
 
     depends_on = [
         azurerm_resource_group.current
@@ -61,7 +62,7 @@ module "key_vault" {
     resource_group_location = azurerm_resource_group.current.location
     resource_group_name     = azurerm_resource_group.current.name
     tenant_id               = data.azurerm_client_config.current.tenant_id
-    client_object_id        = data.azurerm_client_config.current.object_id
+    client_object_id        = module.aks.kubelet_identity
     eso_e2e_sp_object_id    = module.e2e_sp.sp_object_id
 
     depends_on = [
@@ -135,20 +136,20 @@ resource "kubernetes_namespace" "eso" {
 
 // the `e2e` pod itself runs with workload identity and
 // does not rely on client credentials.
-# resource "kubernetes_service_account" "e2e" {
-#   metadata {
-#     name      = "external-secrets-e2e"
-#     namespace = "default"
-#     annotations = {
-#       "azure.workload.identity/client-id" = module.e2e_sp.application_id
-#       "azure.workload.identity/tenant-id" = data.azurerm_client_config.current.tenant_id
-#     }
-#     labels = {
-#       "azure.workload.identity/use" = "true"
-#     }
-#   }
-#   depends_on = [module.aks, kubernetes_namespace.eso]
-# }
+resource "kubernetes_service_account" "e2e" {
+  metadata {
+    name      = "external-secrets-e2e"
+    namespace = "default"
+    annotations = {
+      "azure.workload.identity/client-id" = module.e2e_sp.application_id
+      "azure.workload.identity/tenant-id" = data.azurerm_client_config.current.tenant_id
+    }
+    labels = {
+      "azure.workload.identity/use" = "true"
+    }
+  }
+  depends_on = [module.aks, kubernetes_namespace.eso]
+}
 
 # resource "kubernetes_service_account" "current" {
 #   metadata {
@@ -169,10 +170,20 @@ resource "azurerm_resource_group" "current" {
     location = "centralus"
 }
 
-resource "azurerm_role_assignment" "key_vault_secrets_user" {
+# resource "azurerm_role_assignment" "key_vault_secrets_user" {
+#   scope                = module.key_vault.key_vault_id
+#   role_definition_name = "Key Vault Secrets User"
+#   principal_id         = module.aks.principal_id
+
+#   depends_on = [
+#     module.key_vault,
+#     module.aks
+#   ]
+# }
+resource "azurerm_role_assignment" "key_vault_secrets_e2e" {
   scope                = module.key_vault.key_vault_id
   role_definition_name = "Key Vault Secrets User"
-  principal_id         = module.aks.principal_id
+  principal_id         = module.aks.kubelet_identity
 
   depends_on = [
     module.key_vault,
@@ -180,16 +191,46 @@ resource "azurerm_role_assignment" "key_vault_secrets_user" {
   ]
 }
 
-resource "azurerm_role_assignment" "azure_container_registry_pull" {
+# resource "azurerm_role_assignment" "azure_container_registry_pull" {
+#   scope                = azurerm_container_registry.current.id
+#   role_definition_name = "AcrPull"
+#   principal_id         = module.aks.principal_id
+
+#   depends_on = [
+#     azurerm_container_registry.current,
+#     module.aks
+#   ]
+# }
+
+## Identity for kublet
+resource "azurerm_user_assigned_identity" "aks_identity" {
+  resource_group_name = azurerm_resource_group.current.name
+  location            = azurerm_resource_group.current.location
+  name                = "productconsilium-identity"
+}
+
+resource "azurerm_role_assignment" "aks_identity_acr" {
   scope                = azurerm_container_registry.current.id
   role_definition_name = "AcrPull"
-  principal_id         = module.aks.principal_id
-
+  #principal_id         = azurerm_user_assigned_identity.aks_identity.principal_id
+  principal_id         = module.aks.kubelet_identity 
   depends_on = [
     azurerm_container_registry.current,
     module.aks
   ]
 }
+
+resource "azurerm_role_assignment" "aks_identity_kv" {
+  scope                = module.key_vault.key_vault_id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = module.aks.kubelet_identity
+
+  depends_on = [
+    module.key_vault,
+    module.aks
+  ]
+}
+
 
 resource "kubernetes_namespace" "argo" {
   metadata {
@@ -212,6 +253,102 @@ resource "helm_release" "argocd" {
     kubernetes_namespace.argo
   ]
 }
+
+resource "helm_release" "external_secrets" {
+  name       = "external-secrets"
+  repository = "https://charts.external-secrets.io"
+  chart      = "external-secrets"
+  namespace  = "external-secrets"
+  create_namespace = true
+
+}
+
+# resource "kubernetes_secret" "sp_credentials" {
+#   metadata {
+#     name      = "azure-secret-sp"
+#     namespace = kubernetes_namespace.product_consilium.metadata[0].name
+#   }
+
+#   data = {
+#     #ClientID     = base64encode(module.e2e_sp.sp_id)
+#     ClientID     = base64encode(module.aks.kubelet_identity)
+#     #ClientSecret = base64encode(module.e2e_sp.sp_password)
+#     ClientSecret = base64encode(module.aks.password)
+#   }
+# }
+
+resource "kubernetes_namespace" "product_consilium" {
+  metadata {
+    name = "productconsilium"
+  }
+}
+
+resource "kubernetes_manifest" "secret_store" {
+  provider = kubernetes
+
+  manifest = {
+    apiVersion = "external-secrets.io/v1alpha1"
+    kind       = "SecretStore"
+    metadata = {
+      name      = "azure-backend"
+      namespace = kubernetes_namespace.product_consilium.metadata[0].name
+    }
+    spec = {
+      provider = {
+        azurekv = {
+          authType  = "ManagedIdentity"
+          identityId  = module.aks.kubelet_identity
+          vaultUrl  = module.key_vault.key_vault_uri
+        }
+      }
+    }
+  }
+
+  depends_on = [
+    module.key_vault,
+    module.aks,
+    kubernetes_namespace.product_consilium
+  ]
+}
+
+resource "kubernetes_manifest" "external_secret" {
+  provider = kubernetes
+
+  manifest = {
+    apiVersion = "external-secrets.io/v1alpha1"
+    kind       = "ExternalSecret"
+    metadata = {
+      name = "productconsilium-externalsecrets"
+      namespace = kubernetes_namespace.product_consilium.metadata[0].name
+    }
+    spec = {
+      refreshInterval = "1h0m0s"
+      secretStoreRef = {
+        kind = "SecretStore"
+        name = "azure-backend"
+      }
+      target = {
+        name = "productconsilium-externalsecrets"
+        creationPolicy = "Owner"
+      }
+      data = [
+        {
+          secretKey = "postgresPassword"
+          remoteRef = {
+            key = "postgres-password"
+          }
+        },
+      ]
+    }
+  }
+  depends_on = [
+    module.key_vault,
+    module.aks,
+    kubernetes_namespace.product_consilium
+  ]
+}
+
+
 resource "kubernetes_manifest" "product_consilium_argocd_application" {
   provider = kubernetes
 
@@ -244,6 +381,11 @@ resource "kubernetes_manifest" "product_consilium_argocd_application" {
       }
     }
   }
+  depends_on = [
+    module.key_vault,
+    module.aks,
+    kubernetes_namespace.product_consilium
+  ]
 }
 
 
