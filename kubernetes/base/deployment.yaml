@@ -19,12 +19,12 @@ spec:
         image: productconsilium.azurecr.io/productconsilium:78cc7a033b364ccd06dcc95c1f63ee19e950e5f1
         ports:
         - containerPort: 8000
-      env:
-      - name: POSTGRES_PASSWORD
-        valueFrom:
-          secretKeyRef:
-            name: productconsilium-externalsecrets
-            key: postgresPassword
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: productconsilium-externalsecrets
+              key: postgresPassword
 
 
 
