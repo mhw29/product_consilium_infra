@@ -126,7 +126,7 @@ resource "kubernetes_service_account" "e2e" {
   depends_on = [module.aks, kubernetes_namespace.eso]
 }
 
-resource "kubernetes_secret" "sp_credentials" {
+resource "kubernetes_secret" "external_dns" {
   metadata {
     name      = "azure-config-file"
     namespace = kubernetes_namespace.product_consilium.metadata[0].name
@@ -140,18 +140,6 @@ resource "kubernetes_secret" "sp_credentials" {
   }
 }
 
-resource "kubernetes_secret" "example" {
-  metadata {
-    name = "basic-auth"
-  }
-
-  data = {
-    username = "admin"
-    password = "P4ssw0rd"
-  }
-
-  type = "kubernetes.io/basic-auth"
-}
 
 # resource "kubernetes_service_account" "current" {
 #   metadata {
