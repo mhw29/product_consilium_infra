@@ -5,7 +5,7 @@ metadata:
 spec:
   type: LoadBalancer
   selector:
-    app: productconsilium
+    app: productconsilium-web
   ports:
     - protocol: TCP
       port: 80

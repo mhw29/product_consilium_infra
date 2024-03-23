@@ -3,16 +3,16 @@ kind: Deployment
 metadata:
   name: product-consilium-deployment
   labels:
-    app: web
+    app: productconsilium-web
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: web
+      app: productconsilium-web
   template:
     metadata:
       labels:
-        app: web
+        app: productconsilium-web
     spec:
       containers:
       - name: web
