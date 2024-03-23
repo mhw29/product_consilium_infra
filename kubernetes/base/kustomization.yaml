@@ -1,12 +1,9 @@
 resources:
 - deployment.yaml
-# - service.yaml
-# - ingress.yaml
-# - configmap.yaml
-# - namespace.yaml
 - service.yaml
 - external-secret.yaml
 - postgres-pvc.yaml
 - postgres-service.yaml
 - postgres-deployment.yaml
 - postgres-pv.yaml
+- externaldns.yaml

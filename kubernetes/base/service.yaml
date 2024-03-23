@@ -1,5 +1,7 @@
 apiVersion: v1
 kind: Service
+annotations:
+  external-dns.alpha.kubernetes.io/hostname: dev-app.productconsilium.com
 metadata:
   name: productconsilium-service
 spec:
