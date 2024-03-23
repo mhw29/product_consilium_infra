@@ -5,6 +5,6 @@ replicas:
 - name: product-consilium-deployment
   count: 2
 images:
-- name: product-consilium-deployment
+- name: productconsilium.azurecr.io/productconsilium
   newTag: fad77070391324e3d5bf38dca41dec6537f8e13c
 namePrefix: dev-
