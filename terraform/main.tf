@@ -133,7 +133,7 @@ resource "kubernetes_secret" "external_dns" {
   }
   data = {
     "tenantId": data.azurerm_client_config.current.tenant_id,
-    "subscriptionId": data.azurerm_subscription.primary.id,
+    "subscriptionId": trimsuffix(trimprefix(data.azurerm_subscription.primary.id, "/subscriptions/"), ""),
     "resourceGroup": azurerm_resource_group.current.name,
     "useManagedIdentityExtension": true,
     "userAssignedIdentityID": module.aks.kubelet_identity
