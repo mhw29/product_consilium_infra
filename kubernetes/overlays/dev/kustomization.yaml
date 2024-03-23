@@ -3,7 +3,7 @@ resources:
 
 replicas:
 - name: product-consilium-deployment
-  count: 1
+  count: 2
 images:
 - name: product-consilium-deployment
   newTag: fad77070391324e3d5bf38dca41dec6537f8e13c
