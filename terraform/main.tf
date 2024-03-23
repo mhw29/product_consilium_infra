@@ -221,6 +221,17 @@ resource "azurerm_role_assignment" "aks_identity_kv" {
   ]
 }
 
+resource "azurerm_role_assignment" "aks_identity_dns" {
+  scope                = azurerm_dns_zone.current.id
+  role_definition_name = "DNS Zone Contributor"
+  principal_id         = module.aks.kubelet_identity
+
+  depends_on = [
+    azurerm_dns_zone.current,
+    module.aks
+  ]
+}
+
 
 resource "kubernetes_namespace" "argo" {
   metadata {
