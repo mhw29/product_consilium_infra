@@ -25,6 +25,26 @@ spec:
             secretKeyRef:
               name: productconsilium-externalsecrets
               key: postgresPassword
-
-
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: productconsilium-externalsecrets
+              key: postgresUser
+        - name: POSTGRES_HOST
+          value: "postgres-service"
+        - name: POSTGRES_DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: productconsilium-externalsecrets
+              key: postgresDBName
+        - name: POSTGRES_PORT
+          value: "5432"
+        resources:
+          limits:
+            cpu: "1"
+            memory: "1Gi"
+          requests:
+            cpu: "0.5"
+            memory: "512Mi"
+        
 

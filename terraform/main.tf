@@ -64,18 +64,18 @@ module "workload-identity" {
     tags        = {}
 }
 
-module "postgres" {
-    source                  = "./azure/postgres"
-    postgres_dbname         = "productconsilium-postgres"
-    postgres_username       = var.postgres_username
-    postgres_password       = var.postgres_password
-    resource_group_location = azurerm_resource_group.current.location
-    resource_group_name     = azurerm_resource_group.current.name
+# module "postgres" {
+#     source                  = "./azure/postgres"
+#     postgres_dbname         = "productconsilium-postgres"
+#     postgres_username       = var.postgres_username
+#     postgres_password       = var.postgres_password
+#     resource_group_location = azurerm_resource_group.current.location
+#     resource_group_name     = azurerm_resource_group.current.name
     
-    depends_on = [
-        azurerm_resource_group.current
-    ]
-}
+#     depends_on = [
+#         azurerm_resource_group.current
+#     ]
+# }
 
 module "test_sp" {
   source = "./azure/service-principal"
