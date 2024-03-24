@@ -26,7 +26,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: dev-external-dns
-    namespace: default
+    namespace: productconsilium
 ---
 apiVersion: apps/v1
 kind: Deployment
