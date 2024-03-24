@@ -10,6 +10,10 @@ output "kube_config" {
 output "kubelet_identity" {
   value = azurerm_kubernetes_cluster.current.kubelet_identity[0].object_id
 }
+
+output "kubelet_identity_client_id" {
+  value = azurerm_kubernetes_cluster.current.kubelet_identity[0].client_id
+}
 output "principal_id" {
   value = azurerm_kubernetes_cluster.current.identity[0].principal_id
 }
