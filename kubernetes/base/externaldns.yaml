@@ -22,10 +22,10 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: external-dns
+  name: dev-external-dns
 subjects:
   - kind: ServiceAccount
-    name: external-dns
+    name: dev-external-dns
     namespace: default
 ---
 apiVersion: apps/v1
