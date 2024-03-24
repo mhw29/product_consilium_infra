@@ -39,6 +39,8 @@ spec:
               key: postgresDBName
         - name: POSTGRES_PORT
           value: "5432"
+        - name: ENV
+          value: "Prod"
 
         
 
