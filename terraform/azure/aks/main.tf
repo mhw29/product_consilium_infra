@@ -7,6 +7,10 @@ resource "azurerm_kubernetes_cluster" "current" {
   oidc_issuer_enabled               = var.oidc_issuer_enabled
   role_based_access_control_enabled = true
 
+  web_app_routing {
+    dns_zone_id = azuread_dns_zone.current.id
+  }
+  
   default_node_pool {
     name       = var.default_node_pool_name
     node_count = var.default_node_pool_node_count
