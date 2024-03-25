@@ -19,6 +19,11 @@ variable "dns_prefix" {
   default     = "api"
 }
 
+variable "dns_zone_id" {
+  type        = string
+  description = "The ID of the Azure DNS Zone which should be used for the Managed Kubernetes Cluster"
+}
+
 variable "oidc_issuer_enabled" {
   type        = bool
   description = "Enable or Disable the OIDC issuer URL"

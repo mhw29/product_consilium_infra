@@ -44,6 +44,7 @@ module "aks" {
     resource_group_location         = azurerm_resource_group.current.location
     resource_group_name             = azurerm_resource_group.current.name
     dns_prefix                      = "productconsilium"
+    dns_zone_id                     = azurerm_dns_zone.current.id
     oidc_issuer_enabled             = true
     default_node_pool_name          = "default"
     default_node_pool_node_count    = 1

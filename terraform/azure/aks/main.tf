@@ -8,7 +8,7 @@ resource "azurerm_kubernetes_cluster" "current" {
   role_based_access_control_enabled = true
 
   web_app_routing {
-    dns_zone_id = azuread_dns_zone.current.id
+    dns_zone_id = var.dns_zone_id
   }
   
   default_node_pool {
