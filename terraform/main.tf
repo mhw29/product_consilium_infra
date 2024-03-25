@@ -23,21 +23,6 @@ data "azurerm_subscription" "primary" {}
 
 data "azurerm_client_config" "current" {}
 
-# module "kubernetes" {
-#     source = "./kubernetes"
-#     host                   = module.aks.host
-#     username               = module.aks.username
-#     password               = module.aks.password
-#     client_certificate     = module.aks.client_certificate
-#     client_key             = module.aks.client_key
-#     cluster_ca_certificate = module.aks.cluster_ca_certificate
-# }
-# resource "kubernetes_namespace" "argocd" {
-#   metadata {
-#     name = "argocd"
-#   }
-# }
-
 module "aks" {
     source                          = "./azure/aks"
     cluster_name                    = "productconsilium-aks"
@@ -57,8 +42,6 @@ module "aks" {
     ]
 }
 
-
-
 module "workload-identity" {
     source      = "./azure/workload-identity"
     tenant_id   = data.azurerm_client_config.current.tenant_id
@@ -68,19 +51,6 @@ module "workload-identity" {
         module.aks
     ]
 }
-
-# module "postgres" {
-#     source                  = "./azure/postgres"
-#     postgres_dbname         = "productconsilium-postgres"
-#     postgres_username       = var.postgres_username
-#     postgres_password       = var.postgres_password
-#     resource_group_location = azurerm_resource_group.current.location
-#     resource_group_name     = azurerm_resource_group.current.name
-    
-#     depends_on = [
-#         azurerm_resource_group.current
-#     ]
-# }
 
 module "test_sp" {
   source = "./azure/service-principal"
@@ -97,17 +67,6 @@ module "test_sp" {
 }
 
 
-
-# resource "azurerm_role_assignment" "current" {
-#   scope                = data.azurerm_subscription.primary.id
-#   role_definition_name = "Key Vault Secrets User"
-#   principal_id         = module.test_sp.sp_id
-
-#   depends_on = [
-#     azurerm_resource_group.current,
-#     module.test_sp
-#   ]
-# }
 resource "kubernetes_namespace" "eso" {
   metadata {
     name = "external-secrets-operator"
@@ -151,58 +110,10 @@ resource "kubernetes_secret" "external_dns" {
   }
 }
 
-
-
-# resource "kubernetes_service_account" "current" {
-#   metadata {
-#     name      = "external-secrets-operator"
-#     namespace = "external-secrets-operator"
-#     annotations = {
-#       "azure.workload.identity/client-id" = module.test_sp.application_id
-#       "azure.workload.identity/tenant-id" = data.azurerm_client_config.current.tenant_id
-#     }
-#     labels = {
-#       "azure.workload.identity/use" = "true"
-#     }
-#   }
-#   depends_on = [module.aks, kubernetes_namespace.eso]
-# }
 resource "azurerm_resource_group" "current" {
     name     = "product-consilium-resource-group"
     location = "centralus"
 }
-
-# resource "azurerm_role_assignment" "key_vault_secrets_user" {
-#   scope                = module.key_vault.key_vault_id
-#   role_definition_name = "Key Vault Secrets User"
-#   principal_id         = module.aks.principal_id
-
-#   depends_on = [
-#     module.key_vault,
-#     module.aks
-#   ]
-# }
-# resource "azurerm_role_assignment" "key_vault_secrets_e2e" {
-#   scope                = module.key_vault.key_vault_id
-#   role_definition_name = "Key Vault Secrets User"
-#   principal_id         = module.aks.kubelet_identity
-
-#   depends_on = [
-#     module.key_vault,
-#     module.aks
-#   ]
-# }
-
-# resource "azurerm_role_assignment" "azure_container_registry_pull" {
-#   scope                = azurerm_container_registry.current.id
-#   role_definition_name = "AcrPull"
-#   principal_id         = module.aks.principal_id
-
-#   depends_on = [
-#     azurerm_container_registry.current,
-#     module.aks
-#   ]
-# }
 
 ## Identity for kublet
 resource "azurerm_user_assigned_identity" "aks_identity" {
@@ -214,7 +125,6 @@ resource "azurerm_user_assigned_identity" "aks_identity" {
 resource "azurerm_role_assignment" "aks_identity_acr" {
   scope                = azurerm_container_registry.current.id
   role_definition_name = "AcrPull"
-  #principal_id         = azurerm_user_assigned_identity.aks_identity.principal_id
   principal_id         = module.aks.kubelet_identity 
   depends_on = [
     azurerm_container_registry.current,
@@ -270,22 +180,6 @@ resource "helm_release" "argocd" {
     kubernetes_namespace.argo
   ]
 }
-
-
-
-# resource "kubernetes_secret" "sp_credentials" {
-#   metadata {
-#     name      = "azure-secret-sp"
-#     namespace = kubernetes_namespace.product_consilium.metadata[0].name
-#   }
-
-#   data = {
-#     #ClientID     = base64encode(module.e2e_sp.sp_id)
-#     ClientID     = base64encode(module.aks.kubelet_identity)
-#     #ClientSecret = base64encode(module.e2e_sp.sp_password)
-#     ClientSecret = base64encode(module.aks.password)
-#   }
-# }
 
 resource "kubernetes_namespace" "product_consilium" {
   metadata {
