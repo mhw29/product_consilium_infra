@@ -63,6 +63,10 @@ module "workload-identity" {
     source      = "./azure/workload-identity"
     tenant_id   = data.azurerm_client_config.current.tenant_id
     tags        = {}
+
+    depends_on = [
+        module.aks
+    ]
 }
 
 # module "postgres" {
@@ -108,6 +112,10 @@ resource "kubernetes_namespace" "eso" {
   metadata {
     name = "external-secrets-operator"
   }
+
+  depends_on = [
+    module.aks
+  ]
 }
 
 // the `e2e` pod itself runs with workload identity and
@@ -241,6 +249,10 @@ resource "kubernetes_namespace" "argo" {
   metadata {
     name = "argocd"
   }
+
+  depends_on = [
+    module.aks
+  ]
 }
 
 resource "helm_release" "argocd" {
@@ -279,6 +291,10 @@ resource "kubernetes_namespace" "product_consilium" {
   metadata {
     name = "productconsilium"
   }
+
+  depends_on = [
+    module.aks
+  ]
 }
 
 
@@ -330,6 +346,11 @@ resource "helm_release" "external_secrets" {
   chart      = "external-secrets"
   namespace  = "external-secrets"
   create_namespace = true
+
+  depends_on = [
+    module.key_vault,
+    module.aks
+  ]
 
 }
 resource "kubernetes_secret" "azure-secret-sp" {
