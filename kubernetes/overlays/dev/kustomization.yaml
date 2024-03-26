@@ -7,4 +7,4 @@ replicas:
 images:
 - name: productconsilium.azurecr.io/productconsilium
   newTag: 31999672ee4082d66fc7983851e90f93aa0a936a
-namePrefix: dev-
+# namePrefix: dev-
