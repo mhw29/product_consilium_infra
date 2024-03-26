@@ -7,3 +7,4 @@ resources:
 - postgres-deployment.yaml
 - postgres-pv.yaml
 - externaldns.yaml
+- ingress-nginx-deploy.yaml
