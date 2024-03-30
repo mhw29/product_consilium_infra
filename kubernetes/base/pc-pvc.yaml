@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pc-volume-claim
+  labels:
+    app: productconsilium
+spec:
+  storageClassName: managed-csi
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  selector:
+    matchLabels:
+      type: local
+      app: productconsilium

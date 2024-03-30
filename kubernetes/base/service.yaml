@@ -2,10 +2,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: productconsilium-service
-  annotations:
-    external-dns.alpha.kubernetes.io/hostname: dev-app.productconsilium.com
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: productconsilium-web
   ports:
