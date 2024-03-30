@@ -8,3 +8,6 @@ resources:
 - postgres-pv.yaml
 - externaldns.yaml
 - ingress-nginx-deploy.yaml
+- pc-ingress.yaml
+- pc-pv.yaml
+- pc-pvc.yaml
