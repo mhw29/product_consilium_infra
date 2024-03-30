@@ -9,5 +9,5 @@ resources:
 - externaldns.yaml
 - ingress-nginx-deploy.yaml
 - pc-ingress.yaml
-- pc-pv.yaml
-- pc-pvc.yaml
+# - pc-pv.yaml
+# - pc-pvc.yaml
