@@ -4,9 +4,9 @@ metadata:
   name: product-consilium-ingress
   namespace: productconsilium
   annotations:
-    kubernetes.io/ingress.class: "nginx"
     external-dns.alpha.kubernetes.io/hostname: dev-app.productconsilium.com
 spec:
+  ingressClassName: "nginx"  # This replaces the deprecated annotation
   rules:
   - host: dev-app.productconsilium.com
     http:
