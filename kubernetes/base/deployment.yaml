@@ -41,6 +41,11 @@ spec:
           value: "5432"
         - name: ENV
           value: "Prod"
-
-        
+        volumeMounts:
+        - name: static-volume
+          mountPath: /app/product_consilium/static
+      volumes:
+      - name: static-volume
+        persistentVolumeClaim:
+          claimName: nginx-volume-claim
 
