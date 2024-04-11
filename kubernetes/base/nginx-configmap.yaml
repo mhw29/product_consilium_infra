@@ -9,7 +9,7 @@ data:
       listen 80;
 
       location /static/ {
-        root /app/product_consilium; 
+        root /app; 
         autoindex on;  # Optional: Enables directory listing
         expires max;   # Optional: Sets expiration for static content
       }

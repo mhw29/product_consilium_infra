@@ -23,7 +23,7 @@ spec:
           subPath: default.conf
           readOnly: true
         - name: static-volume
-          mountPath: /app/product_consilium/static
+          mountPath: /app/static
       volumes:
       - name: nginx-config-volume
         configMap:

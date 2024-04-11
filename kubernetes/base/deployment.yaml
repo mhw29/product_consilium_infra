@@ -43,7 +43,7 @@ spec:
           value: "Prod"
         volumeMounts:
         - name: static-volume
-          mountPath: /app/product_consilium/static
+          mountPath: /app/static
       volumes:
       - name: static-volume
         persistentVolumeClaim:

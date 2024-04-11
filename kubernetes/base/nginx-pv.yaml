@@ -13,4 +13,4 @@ spec:
   accessModes:
     - ReadWriteMany
   hostPath:
-    path: /app/product_consilium/static
+    path: /app/static
