@@ -6,4 +6,4 @@ replicas:
   count: 2
 images:
 - name: productconsilium.azurecr.io/productconsilium
-  newTag: 113e8b56f55f993ba3ccfb65efc72f8f296ac952
+  newTag: 85c3d6e5852561e54ee3057e9eda29bf47bcec45
