@@ -5,7 +5,13 @@ metadata:
   namespace: productconsilium
   annotations:
     external-dns.alpha.kubernetes.io/hostname: dev-app.productconsilium.com
+    cert-manager.io/cluster-issuer: letsencrypt-staging
+    cert-manager.io/acme-challenge-type: http01
 spec:
+  tls:
+  - hosts:
+    - dev-app.productconsilium.com
+    secretName: tls-secret
   ingressClassName: "nginx"  # This replaces the deprecated annotation
   rules:
   - host: dev-app.productconsilium.com
