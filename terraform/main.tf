@@ -274,7 +274,6 @@ resource "kubernetes_manifest" "cert_issuer_staging" {
     kind       = "ClusterIssuer"
     metadata = {
       name      = "letsencrypt-staging"
-      namespace = "cert-manager"
     }
     spec = {
       acme = {
