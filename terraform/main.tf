@@ -303,6 +303,42 @@ resource "kubernetes_manifest" "cert_issuer_staging" {
   }
 }
 
+resource "kubernetes_manifest" "cert_issuer_production" {
+  provider = kubernetes
+  manifest = {
+    apiVersion = "cert-manager.io/v1"
+    kind       = "ClusterIssuer"
+    metadata = {
+      name      = "letsencrypt-production"
+    }
+    spec = {
+      acme = {
+        email = "mwilliamson@productconsilium.com"
+        server = "https://acme-v02.api.letsencrypt.org/directory"
+        privateKeySecretRef = {
+          name = "letsencrypt-production"
+        }
+        solvers = [
+          {
+            http01 = {
+              ingress = {
+                class = "nginx"
+                podTemplate = {
+                  spec = {
+                    nodeSelector = {
+                      "kubernetes.io/os" = "linux"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
+
 resource "kubernetes_secret" "azure-secret-sp" {
   metadata {
     name      = "azure-secret-sp"
