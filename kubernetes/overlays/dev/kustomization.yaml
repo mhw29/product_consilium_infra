@@ -3,7 +3,7 @@ resources:
 
 replicas:
 - name: product-consilium-deployment
-  count: 2
+  count: 1
 images:
 - name: productconsilium.azurecr.io/productconsilium
   newTag: 9a31393b0759b0b6a68f1763f79229e4411d1659
