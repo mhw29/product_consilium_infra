@@ -7,19 +7,49 @@ data:
   default.conf: |
     server {
       listen 80;
+      server_name dev-app.productconsilium.com;  # Adjust if necessary
 
+      # Static content
       location /static/ {
-        root /app; 
-        autoindex on;  # Optional: Enables directory listing
-        expires max;   # Optional: Sets expiration for static content
+        alias /app/static/;  # Ensure this path is correct based on where static files are stored
+        autoindex off;  # Turn off directory listing
+        expires max;   # Cache static content for as long as possible
       }
 
+      # Favicon
       location = /favicon.ico { 
         access_log off; 
-        log_not_found off; 
+        log_not_found off;
+        expires max;
       }
 
+      # Health check
       location /healthcheck {
         return 200 "Server is healthy";
+      }
+
+      # Proxy all other requests to the Django application
+      location / {
+        proxy_pass http://productconsilium-service:80;  # Ensure this matches your Django service name and port
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $server_name;
+        proxy_set_header X-Forwarded-Port $server_port;
+
+        # WebSocket support
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+
+        # Buffering settings
+        proxy_buffers 8 16k;
+        proxy_buffer_size 32k;
+
+        # Handle timeouts
+        proxy_connect_timeout 60s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
       }
     }
